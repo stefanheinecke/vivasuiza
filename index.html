@@ -1105,8 +1105,7 @@
         const data = await res.json();
         if (data.status === 'ok') {
           localStorage.setItem('loggedInUser', username);
-          // Set cookie so backend can verify auth on /download/ requests
-          document.cookie = 'loggedInUser=' + encodeURIComponent(username) + '; path=/; max-age=86400';
+          // cookie will now be set by server response
           updateAuthUI();
           closeAuth();
         } else { alert('Invalid credentials'); }

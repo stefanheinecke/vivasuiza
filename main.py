@@ -1,7 +1,7 @@
 import json
 import os
 import datetime
-from fastapi import FastAPI, Form, Cookie
+from fastapi import FastAPI, Form, Cookie, Response
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
 import psycopg2
@@ -123,7 +123,7 @@ def register(username: str = Form(...), password: str = Form(...)):
 
 
 @app.post("/login")
-def login(username: str = Form(...), password: str = Form(...)):
+def login(username: str = Form(...), password: str = Form(...), response: Response = None):
     try:
         conn = get_conn()
         cur = conn.cursor()
@@ -140,6 +140,9 @@ def login(username: str = Form(...), password: str = Form(...)):
             pw_try = hashlib.sha256(password.encode('utf-8')).hexdigest()
         if not pwd_context.verify(pw_try, pwd_hash):
             return {"error": "invalid_credentials"}
+        # set a cookie so browser will send it on future requests
+        if response is not None:
+            response.set_cookie("loggedInUser", username, max_age=86400, path="/")
         return {"status": "ok"}
     except Exception as e:
         return {"error": str(e)}
