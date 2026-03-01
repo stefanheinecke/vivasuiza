@@ -604,7 +604,11 @@
           <button class="lang-btn active" data-lang="es" onclick="changeLanguage('es')">ES</button>
           <button class="lang-btn" data-lang="de" onclick="changeLanguage('de')">DE</button>
           <button class="lang-btn" data-lang="en" onclick="changeLanguage('en')">EN</button>
-          <button class="lang-btn" id="authBtn" onclick="openAuth()">Login</button>
+          <div id="authContainer" style="display:flex;gap:8px;align-items:center;">
+            <button class="lang-btn" id="authBtn" onclick="openAuth()">Login</button>
+            <span id="usernameDisplay" style="display:none;font-size:12px;color:var(--muted);"></span>
+            <button class="lang-btn" id="logoutBtn" style="display:none;" onclick="logout()">Logout</button>
+          </div>
         </div>
       </nav>
     </header>
@@ -1061,16 +1065,45 @@
       try {
         const res = await fetch('/login', { method: 'POST', headers: {'Content-Type':'application/x-www-form-urlencoded'}, body: 'username=' + encodeURIComponent(username) + '&password=' + encodeURIComponent(password) });
         const data = await res.json();
-        if (data.status === 'ok') { alert('Login successful'); closeAuth(); }
-        else { alert('Invalid credentials'); }
+        if (data.status === 'ok') {
+          localStorage.setItem('loggedInUser', username);
+          updateAuthUI();
+          closeAuth();
+          alert('Login successful');
+        } else { alert('Invalid credentials'); }
       } catch (e) { console.error(e); alert('Login failed'); }
+    }
+
+    function logout() {
+      localStorage.removeItem('loggedInUser');
+      updateAuthUI();
+    }
+
+    function updateAuthUI() {
+      const user = localStorage.getItem('loggedInUser');
+      const authBtn = document.getElementById('authBtn');
+      const usernameDisplay = document.getElementById('usernameDisplay');
+      const logoutBtn = document.getElementById('logoutBtn');
+      if (user) {
+        authBtn.style.display = 'none';
+        usernameDisplay.textContent = user;
+        usernameDisplay.style.display = 'inline';
+        logoutBtn.style.display = 'block';
+      } else {
+        authBtn.style.display = 'block';
+        usernameDisplay.style.display = 'none';
+        logoutBtn.style.display = 'none';
+      }
     }
 
     // Set year in footer
     document.getElementById("year").textContent = new Date().getFullYear();
 
     // Initialize on page load
-    document.addEventListener('DOMContentLoaded', fetchTranslations);
+    document.addEventListener('DOMContentLoaded', function() {
+      fetchTranslations();
+      updateAuthUI();
+    });
     
     // Also try to fetch immediately in case DOM is ready
     if (document.readyState === 'loading') {
