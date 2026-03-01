@@ -1,3 +1,44 @@
+# List all users and their permissions (for admin UI)
+@app.get("/admin/list_users")
+def admin_list_users(session_id: str = Cookie(None)):
+    if not is_admin_user(session_id):
+        return {"error": "unauthorized"}
+    try:
+        conn = get_conn()
+        cur = conn.cursor()
+        cur.execute("SELECT username, is_admin FROM users")
+        users = cur.fetchall()
+        cur.execute("SELECT username, filename FROM permissions")
+        perms = cur.fetchall()
+        cur.close()
+        conn.close()
+        # Build user-permissions map
+        user_map = [
+            {"username": u[0], "is_admin": u[1], "files": []}
+            for u in users
+        ]
+        user_dict = {u["username"]: u for u in user_map}
+        for username, filename in perms:
+            if username in user_dict:
+                user_dict[username]["files"].append(filename)
+        return {"users": user_map}
+    except Exception as e:
+        return {"error": str(e)}
+# Helper to check if session user is admin
+def is_admin_user(session_id: str):
+    user = get_username_from_session(session_id)
+    if not user:
+        return False
+    try:
+        conn = get_conn()
+        cur = conn.cursor()
+        cur.execute("SELECT is_admin FROM users WHERE username = %s", (user,))
+        row = cur.fetchone()
+        cur.close()
+        conn.close()
+        return row and row[0]
+    except Exception:
+        return False
 import json
 import os
 import datetime
@@ -40,7 +81,8 @@ def init_db():
             CREATE TABLE IF NOT EXISTS users (
                 username VARCHAR(150) PRIMARY KEY,
                 password_hash TEXT NOT NULL,
-                created_at TIMESTAMP NOT NULL
+                created_at TIMESTAMP NOT NULL,
+                is_admin BOOLEAN DEFAULT FALSE
             )
         """)
         # sessions table for server-side session IDs
@@ -50,6 +92,14 @@ def init_db():
                 username VARCHAR(150) REFERENCES users(username) ON DELETE CASCADE,
                 created_at TIMESTAMP NOT NULL,
                 expires_at TIMESTAMP NOT NULL
+            )
+        """)
+        # permissions table: which user can access which file
+        cur.execute("""
+            CREATE TABLE IF NOT EXISTS permissions (
+                username VARCHAR(150) REFERENCES users(username) ON DELETE CASCADE,
+                filename VARCHAR(255) NOT NULL,
+                PRIMARY KEY (username, filename)
             )
         """)
         conn.commit()
@@ -84,6 +134,20 @@ def get_username_from_session(session_id: str):
 # password hashing context: use bcrypt_sha256 to avoid bcrypt's 72-byte password limit
 pwd_context = CryptContext(schemes=["bcrypt_sha256"], deprecated="auto")
 print(pwd_context.schemes())
+
+# check whether a given username has permission for a filename
+def user_has_permission(username: str, filename: str) -> bool:
+    try:
+        conn = get_conn()
+        cur = conn.cursor()
+        cur.execute("SELECT 1 FROM permissions WHERE username = %s AND filename = %s", (username, filename))
+        row = cur.fetchone()
+        cur.close()
+        conn.close()
+        return bool(row)
+    except Exception as e:
+        print("permission check error", e)
+        return False
 
 # CORS erlauben, damit dein HTML/JS im Browser zugreifen darf
 app.add_middleware(
@@ -195,7 +259,10 @@ def download_doc(filename: str, session_id: str = Cookie(None)):
         allowed_files = ["doc1.pdf", "doc2.pdf"]
         if filename not in allowed_files:
             return {"error": "not_found"}
-        file_path = os.path.join("download", filename)
+        # check user permission for this file
+        if not user_has_permission(user, filename):
+            return {"error": "forbidden"}
+        file_path = os.path.join("docs", filename)
         if not os.path.exists(file_path):
             return {"error": "file_not_found"}
         return FileResponse(file_path, media_type="application/pdf", filename=filename)
@@ -214,6 +281,39 @@ def logout(response: Response, session_id: str = Cookie(None)):
             conn.close()
         # clear cookie
         response.delete_cookie("session_id", path="/")
+        return {"status": "ok"}
+    except Exception as e:
+        return {"error": str(e)}
+
+
+
+# Admin endpoints: grant/revoke permission
+@app.post("/admin/grant_permission")
+def admin_grant_permission(username: str = Form(...), filename: str = Form(...), session_id: str = Cookie(None)):
+    if not is_admin_user(session_id):
+        return {"error": "unauthorized"}
+    try:
+        conn = get_conn()
+        cur = conn.cursor()
+        cur.execute("INSERT INTO permissions (username, filename) VALUES (%s, %s) ON CONFLICT DO NOTHING", (username, filename))
+        conn.commit()
+        cur.close()
+        conn.close()
+        return {"status": "ok"}
+    except Exception as e:
+        return {"error": str(e)}
+
+@app.post("/admin/revoke_permission")
+def admin_revoke_permission(username: str = Form(...), filename: str = Form(...), session_id: str = Cookie(None)):
+    if not is_admin_user(session_id):
+        return {"error": "unauthorized"}
+    try:
+        conn = get_conn()
+        cur = conn.cursor()
+        cur.execute("DELETE FROM permissions WHERE username = %s AND filename = %s", (username, filename))
+        conn.commit()
+        cur.close()
+        conn.close()
         return {"status": "ok"}
     except Exception as e:
         return {"error": str(e)}

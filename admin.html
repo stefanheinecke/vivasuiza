@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin Panel - User Permissions</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body { font-family: Arial, sans-serif; background: #f7f7f7; margin: 0; }
+        .container { max-width: 900px; margin: 40px auto; background: #fff; padding: 32px; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
+        h1 { margin-top: 0; }
+        table { width: 100%; border-collapse: collapse; margin-top: 24px; }
+        th, td { padding: 12px 8px; border-bottom: 1px solid #eee; text-align: left; }
+        th { background: #f0f0f0; }
+        .file-list { display: flex; flex-wrap: wrap; gap: 8px; }
+        .file-tile { background: #e3eafc; padding: 4px 12px; border-radius: 6px; font-size: 0.95em; }
+        .btn { padding: 6px 14px; border: none; border-radius: 5px; background: #1976d2; color: #fff; cursor: pointer; font-size: 0.95em; margin-right: 6px; }
+        .btn.revoke { background: #d32f2f; }
+        .btn.grant { background: #388e3c; }
+        .admin-badge { background: #ffd700; color: #333; padding: 2px 8px; border-radius: 4px; font-size: 0.9em; margin-left: 8px; }
+        .status { margin-top: 18px; color: #1976d2; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>Admin Panel: User Permissions</h1>
+    <div id="status" class="status"></div>
+    <table id="users-table">
+        <thead>
+            <tr>
+                <th>User</th>
+                <th>Admin</th>
+                <th>Files</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+    <h2>Grant Permission</h2>
+    <form id="grant-form">
+        <label>User: <input type="text" id="grant-username" required></label>
+        <label>File: <select id="grant-file">
+            <option value="doc1.pdf">doc1.pdf</option>
+            <option value="doc2.pdf">doc2.pdf</option>
+        </select></label>
+        <button type="submit" class="btn grant">Grant</button>
+    </form>
+</div>
+<script>
+async function fetchUsers() {
+    const res = await fetch('/admin/list_users');
+    const data = await res.json();
+    if (data.error) {
+        document.getElementById('status').textContent = 'Error: ' + data.error;
+        return;
+    }
+    const tbody = document.querySelector('#users-table tbody');
+    tbody.innerHTML = '';
+    data.users.forEach(user => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+            <td>${user.username}</td>
+            <td>${user.is_admin ? '<span class="admin-badge">Admin</span>' : ''}</td>
+            <td><div class="file-list">${user.files.map(f => `<span class="file-tile">${f}</span>`).join('')}</div></td>
+            <td>
+                ${['doc1.pdf','doc2.pdf'].map(f =>
+                    user.files.includes(f) ?
+                    `<button class="btn revoke" onclick="revoke('${user.username}','${f}')">Revoke ${f}</button>` :
+                    `<button class="btn grant" onclick="grant('${user.username}','${f}')">Grant ${f}</button>`
+                ).join('')}
+            </td>
+        `;
+        tbody.appendChild(tr);
+    });
+}
+
+async function grant(username, filename) {
+    const form = new FormData();
+    form.append('username', username);
+    form.append('filename', filename);
+    const res = await fetch('/admin/grant_permission', { method: 'POST', body: form });
+    const data = await res.json();
+    document.getElementById('status').textContent = data.status ? 'Permission granted.' : 'Error: ' + data.error;
+    fetchUsers();
+}
+
+async function revoke(username, filename) {
+    const form = new FormData();
+    form.append('username', username);
+    form.append('filename', filename);
+    const res = await fetch('/admin/revoke_permission', { method: 'POST', body: form });
+    const data = await res.json();
+    document.getElementById('status').textContent = data.status ? 'Permission revoked.' : 'Error: ' + data.error;
+    fetchUsers();
+}
+
+document.getElementById('grant-form').onsubmit = async (e) => {
+    e.preventDefault();
+    const username = document.getElementById('grant-username').value;
+    const filename = document.getElementById('grant-file').value;
+    await grant(username, filename);
+    document.getElementById('grant-username').value = '';
+};
+
+fetchUsers();
+</script>
+</body>
+</html>
