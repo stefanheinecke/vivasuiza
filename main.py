@@ -6,6 +6,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
 import psycopg2
 from passlib.context import CryptContext
+import hashlib
 
 # helper to get connection using DATABASE_URL env variable
 DATABASE_URL = os.getenv("DATABASE_URL")
@@ -102,7 +103,13 @@ def register(username: str = Form(...), password: str = Form(...)):
             conn.close()
             return {"error": "user_exists"}
 
-        pwd_hash = pwd_context.hash(password)
+        # avoid bcrypt length limit by pre-hashing long passwords
+        pw_bytes = password.encode('utf-8')
+        if len(pw_bytes) > 72:
+            to_hash = hashlib.sha256(pw_bytes).hexdigest()
+        else:
+            to_hash = password
+        pwd_hash = pwd_context.hash(to_hash)
         cur.execute(
             "INSERT INTO users (username, password_hash, created_at) VALUES (%s, %s, %s)",
             (username, pwd_hash, datetime.datetime.utcnow())
@@ -127,7 +134,11 @@ def login(username: str = Form(...), password: str = Form(...)):
         if not row:
             return {"error": "invalid_credentials"}
         pwd_hash = row[0]
-        if not pwd_context.verify(password, pwd_hash):
+        # apply same pre-hash rule when verifying
+        pw_try = password
+        if len(password.encode('utf-8')) > 72:
+            pw_try = hashlib.sha256(password.encode('utf-8')).hexdigest()
+        if not pwd_context.verify(pw_try, pwd_hash):
             return {"error": "invalid_credentials"}
         return {"status": "ok"}
     except Exception as e:
