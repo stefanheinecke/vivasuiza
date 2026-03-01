@@ -7,6 +7,7 @@ from fastapi.responses import FileResponse
 import psycopg2
 from passlib.context import CryptContext
 import hashlib
+from fastapi.staticfiles import StaticFiles
 
 # helper to get connection using DATABASE_URL env variable
 DATABASE_URL = os.getenv("DATABASE_URL")
@@ -51,6 +52,9 @@ init_db()
 
 
 app = FastAPI()
+
+# serve every file under ./files/ at URL “/files/...”
+app.mount("/files", StaticFiles(directory="files"), name="files")
 
 # password hashing context: use bcrypt_sha256 to avoid bcrypt's 72-byte password limit
 pwd_context = CryptContext(schemes=["bcrypt_sha256"], deprecated="auto")
