@@ -3,6 +3,7 @@ import os
 import datetime
 import uuid
 import secrets
+import re
 from typing import Optional
 from urllib.parse import urlencode
 
@@ -85,6 +86,17 @@ init_db()
 
 
 app = FastAPI()
+
+
+def is_valid_email(value: str) -> bool:
+    """Very simple email format check for usernames.
+
+    This is intentionally minimal; it just enforces the general shape
+    local-part@domain.tld without spaces.
+    """
+    if not value:
+        return False
+    return bool(re.match(r"^[^@\s]+@[^@\s]+\.[^@\s]+$", value))
 
 
 # List all users and their permissions (for admin UI)
@@ -239,6 +251,9 @@ def post_subscriber(email: str = Form(...)):
 def register(username: str = Form(...), password: str = Form(...)):
     try:
         print("Start register")
+        # enforce that username is an email address
+        if not is_valid_email(username):
+            return {"error": "invalid_email"}
         conn = get_conn()
         cur = conn.cursor()
         # check exists

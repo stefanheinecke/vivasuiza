@@ -1218,12 +1218,19 @@
     async function submitRegister() {
       const username = document.getElementById('authUsername').value.trim();
       const password = document.getElementById('authPassword').value;
-      if (!username || !password) { alert('Please provide username and password'); return; }
+      if (!username || !password) { alert('Please provide email and password'); return; }
+      // basic email format check on client side for better UX
+      const emailPattern = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
+      if (!emailPattern.test(username)) {
+        alert('Please use a valid email address as username');
+        return;
+      }
       try {
         const res = await fetch('/register', { method: 'POST', headers: {'Content-Type':'application/x-www-form-urlencoded'}, body: 'username=' + encodeURIComponent(username) + '&password=' + encodeURIComponent(password) });
         const data = await res.json();
         if (data.status === 'ok') { alert('Registered'); closeAuth(); }
-        else if (data.error === 'user_exists') { alert('User already exists'); }
+        else if (data.error === 'invalid_email') { alert('Email must be a valid email address'); }
+        else if (data.error === 'user_exists') { alert('Email already exists'); }
         else { alert('Error: ' + (data.error || 'unknown')) }
       } catch (e) { console.error(e); alert('Register failed'); }
     }
@@ -1231,7 +1238,7 @@
     async function submitLogin() {
       const username = document.getElementById('authUsername').value.trim();
       const password = document.getElementById('authPassword').value;
-      if (!username || !password) { alert('Please provide username and password'); return; }
+      if (!username || !password) { alert('Please provide email and password'); return; }
       try {
         const res = await fetch('/login', { method: 'POST', headers: {'Content-Type':'application/x-www-form-urlencoded'}, body: 'username=' + encodeURIComponent(username) + '&password=' + encodeURIComponent(password) });
         const data = await res.json();
