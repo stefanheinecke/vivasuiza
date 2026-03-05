@@ -331,7 +331,7 @@ def logout(response: Response, session_id: str = Cookie(None)):
         return {"error": str(e)}
 
 
-@app.get("/auth/google/login")
+@app.get("/auth/google")
 def google_login(next: str = "/"):
     """Start Google OAuth2 login flow by redirecting to Google's consent screen."""
     if not (GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET and GOOGLE_REDIRECT_URI):
