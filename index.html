@@ -929,7 +929,7 @@
           <div class="section-kicker" data-i18n="pricing_kicker">Precios</div>
           <h2 class="section-title" data-i18n="pricing_title">Empieza gratis. Paga solo si necesitas más acompañamiento.</h2>
           <p class="section-subtitle" data-i18n="pricing_subtitle">
-            El objetivo de SuizaFácil es que tomes buenas decisiones desde el principio. Por eso, la base es gratuita y los servicios premium son claros y transparentes.
+            El objetivo de VivaSuiza es que tomes buenas decisiones desde el principio. Por eso, la base es gratuita y los servicios premium son claros y transparentes.
           </p>
         </div>
         <div class="pricing-grid">
@@ -1090,7 +1090,7 @@
         try { localStorage.removeItem('translations'); } catch(e) {}
 
         // cache-busting query + instruct browser not to use cache
-        const url = "https://suizafacil-production.up.railway.app/translations?cb=" + Date.now();
+        const url = "https://vivasuiza-production.up.railway.app/translations?cb=" + Date.now();
         const response = await fetch(url, { cache: 'no-store' });
         if (!response.ok) {
           console.error('Translations fetch failed', response.status, response.statusText);
