@@ -1702,18 +1702,35 @@
       background: #c5303b;
     }
 
-    /* Q&A / Community Feedback */
+    /* Feedback form */
     .qa-section { background: var(--bg); }
-    .qa-compose {
+    .feedback-form {
       background: var(--white);
       border-radius: 14px;
       padding: 24px;
-      margin-bottom: 32px;
       box-shadow: 0 2px 12px rgba(0,0,0,.06);
     }
-    .qa-compose textarea {
+    .feedback-form-row {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 12px;
+      flex-wrap: wrap;
+    }
+    .feedback-form input[type="email"],
+    .feedback-form input[type="text"] {
+      flex: 1;
+      min-width: 200px;
+      padding: 12px 14px;
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      font-family: inherit;
+      font-size: 15px;
+      background: var(--bg);
+      color: var(--dark);
+    }
+    .feedback-form textarea {
       width: 100%;
-      min-height: 80px;
+      min-height: 120px;
       padding: 12px 14px;
       border: 1.5px solid var(--border);
       border-radius: 10px;
@@ -1722,162 +1739,21 @@
       resize: vertical;
       background: var(--bg);
       color: var(--dark);
+      margin-bottom: 12px;
     }
-    .qa-compose textarea:focus { outline: none; border-color: var(--red); }
-    .qa-compose-row {
-      display: flex;
+    .feedback-form input:focus,
+    .feedback-form textarea:focus { outline: none; border-color: var(--red); }
+    .feedback-form-actions {
       justify-content: flex-end;
-      margin-top: 12px;
-      gap: 12px;
       align-items: center;
+      gap: 16px;
     }
-    .qa-login-hint {
+    .feedback-status {
       font-size: 13px;
       color: var(--muted);
     }
-    .qa-thread {
-      background: var(--white);
-      border-radius: 14px;
-      padding: 20px 24px;
-      margin-bottom: 16px;
-      box-shadow: 0 2px 12px rgba(0,0,0,.06);
-    }
-    .qa-question-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      gap: 12px;
-    }
-    .qa-author {
-      font-size: 12px;
-      color: var(--muted);
-      margin-bottom: 4px;
-    }
-    .qa-text {
-      font-size: 15px;
-      line-height: 1.6;
-      color: var(--dark);
-      margin-bottom: 12px;
-    }
-    .qa-actions {
-      display: flex;
-      gap: 10px;
-      margin-bottom: 12px;
-    }
-    .qa-reply-btn, .qa-delete-btn {
-      font-size: 12px;
-      padding: 4px 12px;
-      border-radius: 6px;
-      border: 1px solid var(--border);
-      background: var(--bg);
-      color: var(--muted);
-      cursor: pointer;
-    }
-    .qa-reply-btn:hover { border-color: var(--red); color: var(--red); }
-    .qa-delete-btn { color: #c53030; }
-    .qa-delete-btn:hover { background: #fed7d7; border-color: #c53030; }
-    .qa-replies-toggle {
-      font-size: 13px;
-      color: var(--red);
-      cursor: pointer;
-      background: none;
-      border: none;
-      padding: 0;
-      font-family: inherit;
-      margin-bottom: 8px;
-    }
-    .qa-replies-toggle:hover { text-decoration: underline; }
-    .qa-replies {
-      margin-left: 20px;
-      padding-left: 16px;
-      border-left: 2px solid var(--border);
-    }
-    .qa-reply {
-      margin-bottom: 14px;
-    }
-    .qa-reply-form {
-      margin-top: 10px;
-      display: flex;
-      gap: 8px;
-    }
-    .qa-reply-form input {
-      flex: 1;
-      padding: 8px 12px;
-      border: 1.5px solid var(--border);
-      border-radius: 8px;
-      font-size: 14px;
-      font-family: inherit;
-      background: var(--bg);
-    }
-    .qa-reply-form input:focus { outline: none; border-color: var(--red); }
-    .qa-reply-form button {
-      padding: 8px 16px;
-      border-radius: 8px;
-      border: none;
-      background: var(--red);
-      color: var(--white);
-      font-size: 14px;
-      cursor: pointer;
-    }
-    .qa-empty {
-      text-align: center;
-      color: var(--muted);
-      padding: 32px 16px;
-      font-size: 15px;
-    }
-    .qa-toolbar {
-      display: flex;
-      gap: 10px;
-      align-items: center;
-      margin-bottom: 20px;
-      flex-wrap: wrap;
-    }
-    .qa-toolbar input[type="text"] {
-      flex: 1;
-      min-width: 160px;
-      padding: 8px 12px;
-      border: 1.5px solid var(--border);
-      border-radius: 8px;
-      font-size: 14px;
-      font-family: inherit;
-      background: var(--bg);
-      color: var(--dark);
-    }
-    .qa-toolbar input[type="text"]:focus { outline: none; border-color: var(--red); }
-    .qa-toolbar select {
-      padding: 8px 12px;
-      border: 1.5px solid var(--border);
-      border-radius: 8px;
-      font-size: 14px;
-      font-family: inherit;
-      background: var(--bg);
-      color: var(--dark);
-      cursor: pointer;
-    }
-    .qa-toolbar select:focus { outline: none; border-color: var(--red); }
-    .qa-pagination {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      gap: 8px;
-      margin-top: 24px;
-    }
-    .qa-pagination button {
-      padding: 6px 14px;
-      border-radius: 8px;
-      border: 1.5px solid var(--border);
-      background: var(--bg);
-      color: var(--dark);
-      font-size: 13px;
-      cursor: pointer;
-      font-family: inherit;
-    }
-    .qa-pagination button:hover:not(:disabled) { border-color: var(--red); color: var(--red); }
-    .qa-pagination button:disabled { opacity: 0.4; cursor: default; }
-    .qa-pagination .qa-page-info {
-      font-size: 13px;
-      color: var(--muted);
-    }
+    .feedback-status-ok { color: #38a169; }
+    .feedback-status-error { color: #c53030; }
     .vote-bar {
       display: flex;
       align-items: center;
@@ -1939,9 +1815,8 @@
     .feedback-banner .btn:hover { opacity: .92; }
     @media (max-width: 600px) {
       .feedback-banner { flex-direction: column; text-align: center; padding: 22px 18px; }
-      .qa-compose { padding: 16px; }
-      .qa-thread { padding: 16px; }
-      .qa-replies { margin-left: 10px; padding-left: 12px; }
+      .feedback-form { padding: 16px; }
+      .feedback-form-row { flex-direction: column; }
     }
 
     .chat-typing {
@@ -2540,13 +2415,13 @@
         </div>
       </section>
 
-            <!-- Q&A / COMMUNITY FEEDBACK -->
+            <!-- FEEDBACK -->
       <section id="community-qa" class="section qa-section">
         <div class="section-header">
-          <div class="section-kicker" data-i18n="qa_kicker">Community</div>
-          <h2 class="section-title" data-i18n="qa_title">Preguntas y comentarios</h2>
-          <p class="section-subtitle" data-i18n="qa_subtitle">
-            ¿Echas en falta algún tema? ¿Tienes una pregunta concreta? Escríbela aquí y la comunidad o el equipo de VivaSuiza te responderá.
+          <div class="section-kicker" data-i18n="feedback_kicker">Community</div>
+          <h2 class="section-title" data-i18n="feedback_title">Preguntas y comentarios</h2>
+          <p class="section-subtitle" data-i18n="feedback_subtitle">
+            ¿Echas en falta algún tema? ¿Tienes una pregunta o sugerencia? Escríbenos y te responderemos por email.
           </p>
         </div>
 
@@ -2558,24 +2433,17 @@
           <button class="btn" id="feedbackScrollBtn" data-i18n="feedback_banner_btn">Dejar feedback</button>
         </div>
 
-        <div class="qa-compose" id="qaCompose">
-          <textarea id="qaText" maxlength="2000" data-i18n-placeholder="qa_placeholder" placeholder="Escribe tu pregunta o sugerencia…"></textarea>
-          <div class="qa-compose-row">
-            <span class="qa-login-hint" id="qaLoginHint" style="display:none;" data-i18n="qa_login_hint">Inicia sesión para publicar.</span>
-            <button class="btn btn-primary" id="qaSubmitBtn" data-i18n="qa_submit">Publicar</button>
+        <form class="feedback-form" id="feedbackForm">
+          <div class="feedback-form-row">
+            <input type="email" id="feedbackEmail" required data-i18n-placeholder="feedback_email_placeholder" placeholder="Tu email *" />
+            <input type="text" id="feedbackName" data-i18n-placeholder="feedback_name_placeholder" placeholder="Tu nombre (opcional)" />
           </div>
-        </div>
-
-        <div class="qa-toolbar" id="qaToolbar">
-          <input type="text" id="qaSearchInput" data-i18n-placeholder="qa_search_placeholder" placeholder="Buscar pregunta…" />
-          <select id="qaSortSelect">
-            <option value="newest" data-i18n="qa_sort_newest">Más recientes</option>
-            <option value="oldest" data-i18n="qa_sort_oldest">Más antiguas</option>
-          </select>
-        </div>
-
-        <div id="qaList"></div>
-        <div class="qa-pagination" id="qaPagination"></div>
+          <textarea id="feedbackMessage" required maxlength="2000" data-i18n-placeholder="feedback_message_placeholder" placeholder="Escribe tu pregunta, sugerencia o comentario…"></textarea>
+          <div class="feedback-form-row feedback-form-actions">
+            <span class="feedback-status" id="feedbackStatus"></span>
+            <button type="submit" class="btn btn-primary" id="feedbackSubmitBtn" data-i18n="feedback_submit">Enviar</button>
+          </div>
+        </form>
       </section>
 
       <!-- FAQ -->
@@ -2732,8 +2600,13 @@
       }
     }
 
-    // Initialize language from localStorage or default to Spanish
-    let currentLanguage = localStorage.getItem('language') || 'es';
+    // Initialize language from localStorage, or detect from domain
+    function getDefaultLanguage() {
+      const host = window.location.hostname;
+      if (host.endsWith('vivasuiza.ch')) return 'de';
+      return 'es'; // vivasuiza.es and all other domains default to Spanish
+    }
+    let currentLanguage = localStorage.getItem('language') || getDefaultLanguage();
 
     // Change language function
     function changeLanguage(lang) {
@@ -3936,280 +3809,75 @@
       });
     }
 
-    // ── Q&A / Community Feedback ────────────────────────────────
-    function initQA() {
-      const list = document.getElementById('qaList');
-      const submitBtn = document.getElementById('qaSubmitBtn');
-      const textArea = document.getElementById('qaText');
-      const loginHint = document.getElementById('qaLoginHint');
+    // ── Feedback form ────────────────────────────────
+    function initFeedback() {
+      const form = document.getElementById('feedbackForm');
       const feedbackBtn = document.getElementById('feedbackScrollBtn');
-      if (!list || !submitBtn) return;
+      if (!form) return;
 
-      const currentUser = localStorage.getItem('loggedInUser') || '';
-
-      function isAdmin() { return window.__isAdmin || false; }
+      const emailInput = document.getElementById('feedbackEmail');
+      const nameInput = document.getElementById('feedbackName');
+      const messageInput = document.getElementById('feedbackMessage');
+      const statusEl = document.getElementById('feedbackStatus');
+      const submitBtn = document.getElementById('feedbackSubmitBtn');
 
       function t(key, fallback) {
         return (translations[currentLanguage] && translations[currentLanguage][key]) || fallback;
       }
 
-      function esc(str) {
-        return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+      // Pre-fill email if the visitor is logged in
+      const currentUser = localStorage.getItem('loggedInUser') || '';
+      if (currentUser && emailInput && !emailInput.value) {
+        emailInput.value = currentUser;
       }
 
-      function timeAgo(isoStr) {
-        const diff = Date.now() - new Date(isoStr).getTime();
-        const mins = Math.floor(diff / 60000);
-        if (mins < 1) return t('qa_just_now', 'ahora');
-        if (mins < 60) return mins + ' min';
-        const hrs = Math.floor(mins / 60);
-        if (hrs < 24) return hrs + 'h';
-        const days = Math.floor(hrs / 24);
-        return days + 'd';
-      }
-
-      function maskEmail(email) {
-        if (!email || !email.includes('@')) return email || '?';
-        const [local, domain] = email.split('@');
-        if (local.length <= 2) return local[0] + '***@' + domain;
-        return local[0] + '***' + local[local.length - 1] + '@' + domain;
-      }
-
-      // Feedback banner scrolls to compose box
+      // Feedback banner scrolls to the form
       if (feedbackBtn) {
         feedbackBtn.addEventListener('click', () => {
-          const compose = document.getElementById('qaCompose');
-          if (compose) {
-            compose.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            setTimeout(() => textArea.focus(), 400);
-          }
+          form.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          setTimeout(() => emailInput.focus(), 400);
         });
       }
 
-      // Show login hint if not logged in
-      if (!currentUser && loginHint) {
-        loginHint.style.display = '';
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const email = (emailInput.value || '').trim();
+        const message = (messageInput.value || '').trim();
+        if (!email || !message) return;
+
         submitBtn.disabled = true;
-        submitBtn.style.opacity = '0.5';
-      }
-
-      let qaPage = 1;
-      let qaSort = 'newest';
-      let qaSearch = '';
-      const searchInput = document.getElementById('qaSearchInput');
-      const sortSelect = document.getElementById('qaSortSelect');
-      const paginationEl = document.getElementById('qaPagination');
-
-      let qaSearchTimer;
-      if (searchInput) {
-        searchInput.addEventListener('input', () => {
-          clearTimeout(qaSearchTimer);
-          qaSearchTimer = setTimeout(() => { qaSearch = searchInput.value.trim(); qaPage = 1; loadQuestions(); }, 300);
-        });
-      }
-      if (sortSelect) {
-        sortSelect.addEventListener('change', () => { qaSort = sortSelect.value; qaPage = 1; loadQuestions(); });
-      }
-
-      async function loadQuestions() {
-        try {
-          const params = new URLSearchParams({ page: qaPage, per_page: 5, sort: qaSort });
-          if (qaSearch) params.set('search', qaSearch);
-          const res = await fetch('/questions?' + params.toString());
-          const data = await res.json();
-          if (data.error || !data.questions) { list.innerHTML = ''; renderPagination(0, 0, 0); return; }
-          if (data.questions.length === 0) {
-            list.innerHTML = '<div class="qa-empty">' + t('qa_empty', 'Aún no hay preguntas. ¡Sé el primero en preguntar!') + '</div>';
-            renderPagination(0, 0, 0);
-            return;
-          }
-          list.innerHTML = data.questions.map(q => renderQuestion(q)).join('');
-          renderPagination(data.page, data.total_pages, data.total);
-        } catch (e) {
-          console.error('QA load error', e);
-        }
-      }
-
-      function renderPagination(page, totalPages, total) {
-        if (!paginationEl) return;
-        if (totalPages <= 1) { paginationEl.innerHTML = ''; return; }
-        let html = '<button ' + (page <= 1 ? 'disabled' : '') + ' data-qa-page="' + (page - 1) + '">' + t('qa_prev', '← Anterior') + '</button>';
-        html += '<span class="qa-page-info">' + page + ' / ' + totalPages + '</span>';
-        html += '<button ' + (page >= totalPages ? 'disabled' : '') + ' data-qa-page="' + (page + 1) + '">' + t('qa_next', 'Siguiente →') + '</button>';
-        paginationEl.innerHTML = html;
-      }
-
-      if (paginationEl) {
-        paginationEl.addEventListener('click', (e) => {
-          const btn = e.target.closest('[data-qa-page]');
-          if (btn && !btn.disabled) {
-            qaPage = parseInt(btn.getAttribute('data-qa-page'), 10);
-            loadQuestions();
-          }
-        });
-      }
-
-      function renderQuestion(q) {
-        let html = '<div class="qa-thread" data-qid="' + q.id + '">';
-        html += '<div class="qa-question-header"><div>';
-        html += '<div class="qa-author">' + esc(maskEmail(q.username)) + ' · ' + timeAgo(q.created_at) + '</div>';
-        html += '<div class="qa-text">' + esc(q.text) + '</div>';
-        html += '</div>';
-        if (isAdmin()) {
-          html += '<button class="qa-delete-btn" data-delete-q="' + q.id + '">✕</button>';
-        }
-        html += '</div>';
-
-        // Actions + voting
-        html += '<div class="qa-actions">';
-        if (currentUser) {
-          html += '<button class="qa-reply-btn" data-toggle-reply="' + q.id + '">' + t('qa_reply_btn', 'Responder') + '</button>';
-        }
-        html += '<div class="vote-bar" data-vote-target="question" data-vote-id="' + q.id + '" style="margin-top:0;">';
-        html += '<button class="vote-btn" data-vote="1">👍 <span class="vote-count">' + (q.votes_up || 0) + '</span></button>';
-        html += '<button class="vote-btn" data-vote="-1">👎 <span class="vote-count">' + (q.votes_down || 0) + '</span></button>';
-        html += '</div>';
-        html += '</div>';
-
-        // Replies (collapsed by default)
-        if (q.replies && q.replies.length > 0) {
-          const n = q.replies.length;
-          const replyWord = n === 1 ? t('qa_reply_count_one', '1 respuesta') : n + ' ' + t('qa_reply_count_many', 'respuestas');
-          html += '<button class="qa-replies-toggle" data-toggle-replies="' + q.id + '">' + replyWord + '</button>';
-          html += '<div class="qa-replies" data-replies-for="' + q.id + '" style="display:none;">';
-          q.replies.forEach(r => {
-            html += '<div class="qa-reply">';
-            html += '<div class="qa-author">' + esc(maskEmail(r.username)) + ' · ' + timeAgo(r.created_at);
-            if (isAdmin()) {
-              html += ' <button class="qa-delete-btn" data-delete-r="' + r.id + '" style="margin-left:6px;font-size:11px;padding:2px 8px;">✕</button>';
-            }
-            html += '</div>';
-            html += '<div class="qa-text">' + esc(r.text) + '</div>';
-            html += '</div>';
-          });
-          html += '</div>';
-        }
-
-        // Reply form (hidden by default)
-        html += '<div class="qa-reply-form" data-reply-form="' + q.id + '" style="display:none;">';
-        html += '<input type="text" maxlength="2000" data-i18n-placeholder="qa_reply_placeholder" placeholder="' + t('qa_reply_placeholder', 'Escribe tu respuesta…') + '" />';
-        html += '<button data-send-reply="' + q.id + '">→</button>';
-        html += '</div>';
-
-        html += '</div>';
-        return html;
-      }
-
-      // Submit new question
-      submitBtn.addEventListener('click', async () => {
-        const text = textArea.value.trim();
-        if (!text) return;
-        submitBtn.disabled = true;
+        statusEl.textContent = t('feedback_sending', 'Enviando…');
+        statusEl.className = 'feedback-status';
         try {
           const fd = new URLSearchParams();
-          fd.append('text', text);
-          const res = await fetch('/questions', {
+          fd.append('email', email);
+          fd.append('message', message);
+          if (nameInput.value.trim()) fd.append('name', nameInput.value.trim());
+          const res = await fetch('/feedback', {
             method: 'POST',
             headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
             body: fd.toString()
           });
           const data = await res.json();
           if (data.status === 'ok') {
-            textArea.value = '';
-            loadQuestions();
-          } else if (data.error === 'unauthorized') {
-            alert(t('qa_login_hint', 'Inicia sesión para publicar.'));
+            statusEl.textContent = t('feedback_success', '¡Gracias! Hemos recibido tu mensaje.');
+            statusEl.className = 'feedback-status feedback-status-ok';
+            form.reset();
+            if (currentUser) emailInput.value = currentUser;
+          } else if (data.error === 'invalid_email') {
+            statusEl.textContent = t('feedback_invalid_email', 'Introduce un email válido.');
+            statusEl.className = 'feedback-status feedback-status-error';
+          } else {
+            statusEl.textContent = t('feedback_error', 'Error al enviar. Inténtalo de nuevo.');
+            statusEl.className = 'feedback-status feedback-status-error';
           }
-        } catch (e) { console.error(e); }
+        } catch (err) {
+          console.error('Feedback submit error', err);
+          statusEl.textContent = t('feedback_error', 'Error al enviar. Inténtalo de nuevo.');
+          statusEl.className = 'feedback-status feedback-status-error';
+        }
         submitBtn.disabled = false;
       });
-
-      // Delegate clicks for reply toggle, send reply, delete
-      list.addEventListener('click', async (e) => {
-        // Toggle replies visibility
-        const toggleReplies = e.target.closest('[data-toggle-replies]');
-        if (toggleReplies) {
-          const qid = toggleReplies.getAttribute('data-toggle-replies');
-          const repliesDiv = list.querySelector('[data-replies-for="' + qid + '"]');
-          if (repliesDiv) {
-            const isHidden = repliesDiv.style.display === 'none';
-            repliesDiv.style.display = isHidden ? '' : 'none';
-          }
-          return;
-        }
-
-        // Toggle reply form
-        const toggleBtn = e.target.closest('[data-toggle-reply]');
-        if (toggleBtn) {
-          const qid = toggleBtn.getAttribute('data-toggle-reply');
-          const form = list.querySelector('[data-reply-form="' + qid + '"]');
-          if (form) {
-            form.style.display = form.style.display === 'none' ? 'flex' : 'none';
-            if (form.style.display === 'flex') form.querySelector('input').focus();
-          }
-          return;
-        }
-
-        // Send reply
-        const sendBtn = e.target.closest('[data-send-reply]');
-        if (sendBtn) {
-          const qid = sendBtn.getAttribute('data-send-reply');
-          const form = list.querySelector('[data-reply-form="' + qid + '"]');
-          const input = form ? form.querySelector('input') : null;
-          if (!input || !input.value.trim()) return;
-          sendBtn.disabled = true;
-          try {
-            const fd = new URLSearchParams();
-            fd.append('text', input.value.trim());
-            const res = await fetch('/questions/' + qid + '/reply', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-              body: fd.toString()
-            });
-            const data = await res.json();
-            if (data.status === 'ok') loadQuestions();
-          } catch (e) { console.error(e); }
-          sendBtn.disabled = false;
-          return;
-        }
-
-        // Delete question (admin)
-        const delQ = e.target.closest('[data-delete-q]');
-        if (delQ) {
-          if (!confirm(t('qa_confirm_delete', '¿Eliminar esta pregunta y todas sus respuestas?'))) return;
-          const qid = delQ.getAttribute('data-delete-q');
-          try {
-            await fetch('/questions/' + qid, { method: 'DELETE' });
-            loadQuestions();
-          } catch (e) { console.error(e); }
-          return;
-        }
-
-        // Delete reply (admin)
-        const delR = e.target.closest('[data-delete-r]');
-        if (delR) {
-          if (!confirm(t('qa_confirm_delete_reply', '¿Eliminar esta respuesta?'))) return;
-          const rid = delR.getAttribute('data-delete-r');
-          try {
-            await fetch('/replies/' + rid, { method: 'DELETE' });
-            loadQuestions();
-          } catch (e) { console.error(e); }
-          return;
-        }
-      });
-
-      // Allow Enter in reply input
-      list.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter' && e.target.matches('.qa-reply-form input')) {
-          const form = e.target.closest('.qa-reply-form');
-          const btn = form ? form.querySelector('[data-send-reply]') : null;
-          if (btn) btn.click();
-        }
-      });
-
-      // Load on init
-      loadQuestions();
-      window.__reloadQA = loadQuestions;
     }
 
     // ── Voting (checklist cards + questions) ──────────────────
@@ -4316,7 +3984,7 @@
       initSearch();
       initProfileMenu();
       initChat();
-      initQA();
+      initFeedback();
       initVoting();
 
       // wire help buttons to send direct help requests

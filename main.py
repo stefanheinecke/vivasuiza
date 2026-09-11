@@ -1303,163 +1303,28 @@ def request_module_access(
         return {"error": "email_send_failed"}
 
 
-# ── Q&A Endpoints ──────────────────────────────────────────────
+# ── Feedback form ──────────────────────────────────────────────
 
-@app.get("/questions")
-def list_questions(page: int = 1, per_page: int = 5, sort: str = "newest", search: str = ""):
-    """Return paginated questions with their replies."""
-    try:
-        conn = get_conn()
-        cur = conn.cursor()
+@app.post("/feedback")
+def submit_feedback(
+    email: str = Form(...),
+    message: str = Form(...),
+    name: Optional[str] = Form(None),
+):
+    """Receive feedback from a visitor and forward it to the site owner via email."""
+    clean_email = (email or "").strip()
+    if not is_valid_email(clean_email):
+        return {"error": "invalid_email"}
+    clean_message = (message or "").strip()
+    if not clean_message or len(clean_message) > 2000:
+        return {"error": "invalid_message"}
+    clean_name = (name or "").strip()
 
-        order = "ASC" if sort == "oldest" else "DESC"
-        search_clean = (search or "").strip()
-
-        # Count total
-        if search_clean:
-            cur.execute("SELECT COUNT(*) FROM questions WHERE text ILIKE %s", ("%" + search_clean + "%",))
-        else:
-            cur.execute("SELECT COUNT(*) FROM questions")
-        total = cur.fetchone()[0]
-
-        total_pages = max(1, -(-total // per_page))  # ceil division
-        page = max(1, min(page, total_pages))
-        offset = (page - 1) * per_page
-
-        if search_clean:
-            cur.execute(
-                f"SELECT id, username, text, created_at FROM questions WHERE text ILIKE %s ORDER BY created_at {order} LIMIT %s OFFSET %s",
-                ("%" + search_clean + "%", per_page, offset),
-            )
-        else:
-            cur.execute(
-                f"SELECT id, username, text, created_at FROM questions ORDER BY created_at {order} LIMIT %s OFFSET %s",
-                (per_page, offset),
-            )
-        rows = cur.fetchall()
-        questions = []
-        for r in rows:
-            qid = r[0]
-            cur.execute(
-                "SELECT id, username, text, created_at FROM replies WHERE question_id = %s ORDER BY created_at ASC",
-                (qid,),
-            )
-            reps = cur.fetchall()
-            # Vote totals for this question
-            cur.execute(
-                "SELECT COALESCE(SUM(CASE WHEN vote=1 THEN 1 ELSE 0 END),0), "
-                "COALESCE(SUM(CASE WHEN vote=-1 THEN 1 ELSE 0 END),0) "
-                "FROM votes WHERE target_type='question' AND target_id=%s",
-                (str(qid),),
-            )
-            vrow = cur.fetchone()
-            questions.append({
-                "id": qid,
-                "username": r[1],
-                "text": r[2],
-                "created_at": r[3].isoformat(),
-                "votes_up": vrow[0] if vrow else 0,
-                "votes_down": vrow[1] if vrow else 0,
-                "replies": [
-                    {"id": rep[0], "username": rep[1], "text": rep[2], "created_at": rep[3].isoformat()}
-                    for rep in reps
-                ],
-            })
-        cur.close()
-        conn.close()
-        return {"questions": questions, "page": page, "total_pages": total_pages, "total": total}
-    except Exception as e:
-        return {"error": str(e)}
-
-
-@app.post("/questions")
-def create_question(text: str = Form(...), session_id: str = Cookie(None)):
-    """Create a new question (must be logged in)."""
-    username = get_username_from_session(session_id) if session_id else None
-    if not username:
-        return {"error": "unauthorized"}
-    clean = (text or "").strip()
-    if not clean or len(clean) > 2000:
-        return {"error": "invalid_text"}
-    try:
-        conn = get_conn()
-        cur = conn.cursor()
-        cur.execute(
-            "INSERT INTO questions (username, text, created_at) VALUES (%s, %s, %s) RETURNING id",
-            (username, clean, datetime.datetime.utcnow()),
-        )
-        qid = cur.fetchone()[0]
-        conn.commit()
-        cur.close()
-        conn.close()
-        return {"status": "ok", "id": qid}
-    except Exception as e:
-        return {"error": str(e)}
-
-
-@app.post("/questions/{question_id}/reply")
-def create_reply(question_id: int, text: str = Form(...), session_id: str = Cookie(None)):
-    """Reply to an existing question (must be logged in)."""
-    username = get_username_from_session(session_id) if session_id else None
-    if not username:
-        return {"error": "unauthorized"}
-    clean = (text or "").strip()
-    if not clean or len(clean) > 2000:
-        return {"error": "invalid_text"}
-    try:
-        conn = get_conn()
-        cur = conn.cursor()
-        # verify question exists
-        cur.execute("SELECT id FROM questions WHERE id = %s", (question_id,))
-        if not cur.fetchone():
-            cur.close()
-            conn.close()
-            return {"error": "not_found"}
-        cur.execute(
-            "INSERT INTO replies (question_id, username, text, created_at) VALUES (%s, %s, %s, %s) RETURNING id",
-            (question_id, username, clean, datetime.datetime.utcnow()),
-        )
-        rid = cur.fetchone()[0]
-        conn.commit()
-        cur.close()
-        conn.close()
-        return {"status": "ok", "id": rid}
-    except Exception as e:
-        return {"error": str(e)}
-
-
-@app.delete("/questions/{question_id}")
-def delete_question(question_id: int, session_id: str = Cookie(None)):
-    """Delete a question and all replies (admin only)."""
-    if not is_admin_user(session_id):
-        return {"error": "unauthorized"}
-    try:
-        conn = get_conn()
-        cur = conn.cursor()
-        cur.execute("DELETE FROM questions WHERE id = %s", (question_id,))
-        conn.commit()
-        cur.close()
-        conn.close()
-        return {"status": "ok"}
-    except Exception as e:
-        return {"error": str(e)}
-
-
-@app.delete("/replies/{reply_id}")
-def delete_reply(reply_id: int, session_id: str = Cookie(None)):
-    """Delete a single reply (admin only)."""
-    if not is_admin_user(session_id):
-        return {"error": "unauthorized"}
-    try:
-        conn = get_conn()
-        cur = conn.cursor()
-        cur.execute("DELETE FROM replies WHERE id = %s", (reply_id,))
-        conn.commit()
-        cur.close()
-        conn.close()
-        return {"status": "ok"}
-    except Exception as e:
-        return {"error": str(e)}
+    step = f"Feedback from {clean_name}" if clean_name else "Feedback"
+    sent = send_help_request_email(step, clean_message, clean_email)
+    if not sent:
+        return {"error": "email_send_failed"}
+    return {"status": "ok"}
 
 
 # ── Voting endpoints ─────────────────────────────────────
